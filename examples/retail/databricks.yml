@@ -1,0 +1,45 @@
+bundle:
+  name: retail
+
+variables:
+  catalog: {default: retail}
+  schema:  {default: bronze}
+
+targets:
+  local:
+    default: true
+    variables:
+      catalog: retail
+      schema:  bronze
+  dev:
+    variables:
+      catalog: retail_dev
+      schema:  bronze
+
+data_sources:
+  - s3://retail-raw/sales.csv
+  - s3://retail-raw/customers.csv
+
+resources:
+  jobs:
+    ingest_job:
+      name: ingest_job
+      tasks:
+        - task_key: ingest_sales
+          file: jobs/ingest_sales.py
+        - task_key: ingest_customers
+          file: jobs/ingest_customers.py
+
+    transform_job:
+      name: transform_job
+      tasks:
+        - task_key: build_silver
+          file: jobs/build_silver.sql
+        - task_key: build_gold
+          file: jobs/build_gold.py
+
+    notebook_job:
+      name: notebook_job
+      tasks:
+        - task_key: exploration
+          file: notebooks/exploration.ipynb

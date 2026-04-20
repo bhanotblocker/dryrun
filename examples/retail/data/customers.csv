@@ -1,0 +1,10 @@
+customer_id,name,email,country,signup_date
+101,Alice Chen,alice@example.com,US,2024-11-02
+102,Bob Martin,bob@example.com,UK,2024-12-10
+103,Carol Kim,carol@example.com,US,2025-01-15
+104,Dan Ortiz,dan@example.com,MX,2025-01-20
+105,Eva Lin,eva@example.com,SG,2025-02-01
+106,Frank Ruiz,frank@example.com,US,2025-02-14
+107,Grace Okafor,grace@example.com,NG,2025-02-28
+108,Henri Dubois,henri@example.com,FR,2025-03-05
+109,Iris Wang,iris@example.com,CN,2025-03-20
