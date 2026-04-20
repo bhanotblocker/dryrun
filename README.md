@@ -163,7 +163,7 @@ inside the container.
 ### Way 1 — one-line Docker install (easiest)
 
 ```bash
-curl -fsSL https://getdryrun.com/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/bhanotblocker/dryrun/main/install.sh | sh
 ```
 
 What this does: pulls the Docker image and drops a little wrapper script at

@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
-# Dry Run installer — https://getdryrun.com
-# Usage: curl -fsSL https://getdryrun.com/install.sh | sh
+# Dry Run installer
+# Usage:
+#   curl -fsSL https://raw.githubusercontent.com/bhanotblocker/dryrun/main/install.sh | sh
 
 set -e
 
