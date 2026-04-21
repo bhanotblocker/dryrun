@@ -3,6 +3,20 @@
 All notable changes to Dry Run are recorded here. The format loosely
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.1] – 2026-04-20
+
+### Added
+- **`dryrun pytest`** — run pytest (with every Dry Run fixture pre-wired)
+  directly inside the Docker image. No host venv required. Extra args
+  pass straight through to pytest.
+- The Docker image now bundles `pytest` so `dryrun pytest` works on a
+  fresh install.
+
+### Fixed
+- `dryrun doctor` no longer crashes on the catalog probe: it was calling
+  `.close()` on a context-manager object. Replaced with a proper
+  `with con.execute("SELECT 1")` round-trip.
+
 ## [0.2.0] – 2026-04-20
 
 ### Added

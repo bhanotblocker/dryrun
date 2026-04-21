@@ -647,24 +647,12 @@ dryrun sql "SELECT country, SUM(revenue) FROM retail.gold.country_daily GROUP BY
 ## 14. Writing tests with pytest
 
 Dry Run ships a pytest plugin that exposes fixtures like `dryrun_spark`
-and `dryrun_executor`. Because `pytest` runs in your host Python
-environment (not inside the Docker container), these fixtures need
-Dry Run importable from that same environment. For the launch build
-this means:
+and `dryrun_executor`. Since **0.2.0**, you don't need to install pytest
+or Dry Run on your host — everything runs inside the same Docker image
+that already powers `dryrun run`. Just use the `dryrun pytest`
+subcommand.
 
-> **Heads-up:** pytest integration currently requires a small host-side
-> companion install alongside the Docker image. A one-command installer
-> for this is being finalised — follow the GitHub repo's **Releases**
-> tab, or file an issue if you need it sooner. The sections below
-> document the intended developer experience.
-
-### Step 1 — install pytest
-
-```bash
-pip install pytest
-```
-
-### Step 2 — make a `tests/` folder in your project
+### Step 1 — make a `tests/` folder in your project
 
 ```
 my-project/
@@ -674,7 +662,7 @@ my-project/
     └── test_silver.py
 ```
 
-### Step 3 — write a test
+### Step 2 — write a test
 
 ```python
 # tests/test_silver.py
@@ -689,13 +677,21 @@ def test_gold_revenue_is_positive(dryrun_spark, dryrun_executor):
     assert total > 0
 ```
 
-### Step 4 — run it
+### Step 3 — run it
 
 ```bash
-pytest -v
+dryrun pytest -v
 ```
 
-That's it. No Spark JVM, no cluster — pytest just runs.
+That's it. No Spark JVM, no cluster — pytest just runs inside the
+container, with every Dry Run fixture pre-registered. Extra arguments
+forward straight through to pytest (`-k`, `--maxfail`, `-x`, …).
+
+> If you already have pytest installed on your host and prefer your
+> own venv, running `pytest -v` still works the same way — you just
+> need `pip install dryrun` locally so the plugin is discoverable.
+> The `dryrun pytest` path exists so Docker-only users don't have to
+> touch a venv at all.
 
 ### What fixtures are available
 
@@ -970,6 +966,8 @@ for now.)
 | `dryrun up -f` | Run in the foreground (Ctrl-C to stop) |
 | `dryrun down` | Stop the dashboard |
 | `dryrun sql "SELECT …"` | Run a one-off SQL query |
+| `dryrun pytest` | Run pytest against your `tests/` folder with fixtures pre-wired |
+| `dryrun pytest -v -k silver` | Pass any extra args straight through to pytest |
 | `dryrun export <cat.sch.tbl> <file>` | Export a table to .csv / .parquet / .json |
 | `dryrun export <tbl> <file> --limit 1000` | Export only the first 1000 rows |
 | `dryrun diff <run_id_a> <run_id_b>` | Compare the tables written by two runs |
@@ -1410,6 +1408,12 @@ Want one of these prioritised? Open an issue and say so — that's literally
 how we pick the order.
 
 ---
+
+## What's new in 0.2.1
+
+- `dryrun pytest` — run your test suite inside the Docker image with
+  every Dry Run fixture pre-registered. No host venv required.
+- Fix: `dryrun doctor` no longer crashes on the catalog probe.
 
 ## What's new in 0.2.0
 
