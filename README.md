@@ -953,8 +953,12 @@ for now.)
 | Command | What it does |
 |---|---|
 | `dryrun --help` | List every command |
+| `dryrun --version` | Print the installed Dry Run version |
 | `dryrun init <name>` | Scaffold `databricks.yml` + a sample job |
+| `dryrun init --example retail` | Copy the bundled retail sample project |
 | `dryrun status` | Show bundle name, jobs, and whether the server is running |
+| `dryrun validate` | Static lint of `databricks.yml` — catches missing files, duplicate task keys, undeclared vars |
+| `dryrun doctor` | Health check: version, deps, catalog, port 8000, and common gotchas |
 | `dryrun hydrate` | Pull sample data from cloud/local fixtures into `.dryrun/storage/` |
 | `dryrun hydrate --sample 50000` | Pull 50k rows per source instead of the default 10k |
 | `dryrun run <job>` | Run a job from `databricks.yml` |
@@ -1389,17 +1393,38 @@ In priority order, roughly:
 1. **`dryrun ci`** — a GitHub Action that runs Dry Run against PR changes
    and posts a comment with the data diff. The dream: "this PR removes 3
    rows from `gold.country_daily` and adds 1. Approve?"
-2. **`dryrun synth`** — synthetic data generator. Say "give me 1 million
+2. **Real Delta via `delta-rs`** — swap the "DuckDB-as-catalog" backend
+   for genuine Delta tables. Unlocks `MERGE INTO`, `UPDATE`, `DELETE`,
+   `VERSION AS OF` and `DESCRIBE HISTORY` in one step.
+3. **`dryrun synth`** — synthetic data generator. Say "give me 1 million
    rows like `retail.bronze.sales`" and stress-test locally.
-3. **Delta time-travel** — emulate `RESTORE TABLE … VERSION AS OF` so tests
-   can rewind state.
-4. **DLT shim** — recognise `@dlt.table` decorators and wire them through.
-5. **Autoloader** — watch a local folder as if it were a streaming source.
-6. **VS Code extension** — right-click on a `.sql` file, "Run with Dry Run".
+4. **`dryrun pull-schema`** — read a table's schema from a real Databricks
+   workspace and create an empty local version, so onboarding doesn't
+   start with "table not found".
+5. **DLT shim** — recognise `@dlt.table` decorators and wire them through.
+6. **Autoloader** — watch a local folder as if it were a streaming source.
 7. **Lineage graph** — visualise which jobs read/write which tables.
+8. **VS Code extension** — right-click on a `.sql` file, "Run with Dry Run".
 
 Want one of these prioritised? Open an issue and say so — that's literally
 how we pick the order.
+
+---
+
+## What's new in 0.2.0
+
+- `dryrun validate` — lint your `databricks.yml` before deploying.
+- `dryrun doctor` — one command to diagnose 90% of "it doesn't work" problems.
+- `dryrun --version` — confirm which build you're on.
+- Notebook `%run ./other_notebook` chains now work, with a shared namespace.
+- Unsupported PySpark functions (e.g. `F.percentile_approx`) now fail with
+  a specific workaround instead of a bare traceback.
+- SQL failures surface actionable hints for the ten most common errors
+  (ambiguous columns, type mismatches, missing catalogs, DELTA parse, …).
+- `dryrun up` warns up-front on port conflicts and on the Colima `/tmp`
+  mount quirk.
+
+See [`CHANGELOG.md`](./CHANGELOG.md) for the full list.
 
 ---
 
